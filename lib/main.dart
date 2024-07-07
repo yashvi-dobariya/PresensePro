@@ -1,8 +1,10 @@
+
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:presencepro/view/home_screen.dart';
-import 'package:presencepro/common/utils/size_config.dart';
+
 import 'common/utils/colour.dart';
+import 'common/utils/size_config.dart';
 
 void main() {
   runApp(const MyApp());
