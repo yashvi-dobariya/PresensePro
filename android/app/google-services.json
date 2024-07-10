@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "580301525625",
+    "project_id": "presensepro",
+    "storage_bucket": "presensepro.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580301525625:android:34434019e0e592db29baa8",
+        "android_client_info": {
+          "package_name": "com.example.presencepro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJv6OrGm1dvywyz_pBejY0-bF-2MsCK-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
