@@ -1,10 +1,15 @@
+import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presencepro/view/home_screen.dart';
+import 'package:presencepro/view/home_screen_student.dart';
+import 'package:presencepro/view/home_screen_teacher.dart';
+import 'common/utils/colour.dart';
+import 'common/utils/size_config.dart';
+import 'common/widgets/font_style.dart';
+import 'common/widgets/outline_button.dart';
+import 'common/widgets/reusable_text.dart';
 import 'register.dart';
-
-
 
 class LoginPage extends StatefulWidget {
   @override
@@ -15,18 +20,19 @@ class _LoginPageState extends State<LoginPage> {
   bool _isObscure3 = true;
   bool visible = false;
   final _formkey = GlobalKey<FormState>();
-  final TextEditingController emailController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppConst.appTheme,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Container(
-              color: Colors.deepPurple,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               child: Center(
@@ -36,21 +42,17 @@ class _LoginPageState extends State<LoginPage> {
                     key: _formkey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(
                           height: 20,
                         ),
-                        const Text(
-                          "PresensePro",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 40,
-                          ),
+                        ReusableText(
+                          text: 'Let’s jump in!',
+                          style: fontStyle(27, AppConst.white, FontWeight.bold),
                         ),
-                        const SizedBox(
-                          height: 60,
+                        SizedBox(
+                          height: 3 * h,
                         ),
                         TextFormField(
                           controller: emailController,
@@ -62,22 +64,22 @@ class _LoginPageState extends State<LoginPage> {
                             contentPadding: const EdgeInsets.only(
                                 left: 14.0, bottom: 8.0, top: 8.0),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.white),
-                              borderRadius: new BorderRadius.circular(10),
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             enabledBorder: UnderlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.white),
-                              borderRadius: new BorderRadius.circular(10),
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           validator: (value) {
-                            if (value!.length == 0) {
+                            if (value!.isEmpty) {
                               return "Email cannot be empty";
                             }
                             if (!RegExp(
                                 "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
                                 .hasMatch(value)) {
-                              return ("Please enter a valid email");
+                              return "Please enter a valid email";
                             } else {
                               return null;
                             }
@@ -110,21 +112,21 @@ class _LoginPageState extends State<LoginPage> {
                             contentPadding: const EdgeInsets.only(
                                 left: 14.0, bottom: 8.0, top: 15.0),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.white),
-                              borderRadius: new BorderRadius.circular(10),
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             enabledBorder: UnderlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.white),
-                              borderRadius: new BorderRadius.circular(10),
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           validator: (value) {
-                            RegExp regex = new RegExp(r'^.{6,}$');
+                            RegExp regex = RegExp(r'^.{6,}$');
                             if (value!.isEmpty) {
                               return "Password cannot be empty";
                             }
                             if (!regex.hasMatch(value)) {
-                              return ("please enter valid password min. 6 character");
+                              return "Please enter a valid password with min. 6 characters";
                             } else {
                               return null;
                             }
@@ -140,25 +142,20 @@ class _LoginPageState extends State<LoginPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            MaterialButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              elevation: 5.0,
-                              height: 40,
-                              onPressed: () {
+                            CustomOtlnBtn(
+                              width: 30 * w,
+                              height: 5 * h,
+                              buttonBorderColor: AppConst.white,
+                              onPress: () {
                                 setState(() {
                                   visible = true;
                                 });
-                                signIn(emailController.text, passwordController.text);
+                                signIn(emailController.text,
+                                    passwordController.text);
                               },
-                              color: Colors.white,
-                              child: const Text(
-                                "Login",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                ),
-                              ),
+                              buttonName: "Login",
+                              buttonColor: AppConst.white,
+                              buttonTextColor: AppConst.black,
                             ),
                             GestureDetector(
                               onTap: () {
@@ -169,22 +166,17 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 );
                               },
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Text(
-                                    "Not registered yet? ",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                    ),
+                                  ReusableText(
+                                    text: 'Not register yet? ',
+                                    style: fontStyle(
+                                        15, AppConst.white, FontWeight.w300),
                                   ),
-                                  Text(
-                                    "Register",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.blue,
-                                      decoration: TextDecoration.underline,
-                                    ),
+                                  ReusableText(
+                                    text: 'Register',
+                                    style: fontStyle(
+                                        15, AppConst.white, FontWeight.w500),
                                   ),
                                 ],
                               ),
@@ -194,14 +186,17 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Visibility(
+                        Center(
+                          child: Visibility(
                             maintainSize: true,
                             maintainAnimation: true,
                             maintainState: true,
                             visible: visible,
                             child: const CircularProgressIndicator(
                               color: Colors.white,
-                            )),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -214,33 +209,58 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void route() {
-    User? user = FirebaseAuth.instance.currentUser;
-    var kk = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user!.uid)
-        .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        if (documentSnapshot.get('rool') == "Teacher") {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>  const HomeScreen(),
-            ),
-          );
-        }else{
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>  const HomeScreen(),
-            ),
-          );
-        }
-      } else {
-        print('Document does not exist on the database');
+  void route(User user) async {
+      // Check for specific UID
+      if (user.uid == 'ZJ9dYxJGeDat9XWroMEs1C1rr822') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreenTeacher(),
+          ),
+        );
+        return;
       }
-    });
+      else{
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreenStudent(),
+          ),
+        );
+      }
+
+      // For all other users, fetch user data from Firestore
+    //   DocumentSnapshot userDoc = await FirebaseFirestore.instance
+    //       .collection('users')
+    //       .doc(user.uid)
+    //       .get();
+    //
+    //   if (userDoc.exists) {
+    //       Navigator.pushReplacement(
+    //         context,
+    //         MaterialPageRoute(
+    //           builder: (context) => HomeScreenStudent(),
+    //         ),
+    //       );
+    //     }
+    //    else {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text('No user data found.'),
+    //       ),
+    //     );
+    //   }
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('Failed to fetch user data: $e'),
+    //     ),
+    //   );
+    // } finally {
+    //   setState(() {
+    //     visible = false;
+    //   });
+    // }
   }
 
   void signIn(String email, String password) async {
@@ -251,13 +271,25 @@ class _LoginPageState extends State<LoginPage> {
           email: email,
           password: password,
         );
-        route();
+        route(userCredential.user!);
       } on FirebaseAuthException catch (e) {
+        String message;
         if (e.code == 'user-not-found') {
-          print('No user found for that email.');
+          message = 'No user found for that email.';
         } else if (e.code == 'wrong-password') {
-          print('Wrong password provided for that user.');
+          message = 'Wrong password provided for that user.';
+        } else {
+          message = 'An error occurred. Please try again.';
         }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+          ),
+        );
+      } finally {
+        setState(() {
+          visible = false;
+        });
       }
     }
   }

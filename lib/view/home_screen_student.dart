@@ -1,20 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:presencepro/Login.dart';
 import 'package:presencepro/common/utils/colour.dart';
 import 'package:presencepro/common/widgets/reusable_text.dart';
 import 'package:presencepro/common/utils/size_config.dart';
 import 'package:presencepro/view/qr_generator.dart';
 import 'package:presencepro/view/qr_scanner.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart'; // Import for SpeedDial
+import 'package:firebase_auth/firebase_auth.dart';
 import '../common/widgets/font_style.dart';
-import 'attendance.dart';
+import 'my_attendance.dart';
+import 'teacher_report.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreenStudent extends StatefulWidget {
+  const HomeScreenStudent({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreenStudent> createState() => _HomeScreenStudentState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenStudentState extends State<HomeScreenStudent> {
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 18) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,17 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
             clipper: HeaderClipper(),
             child: Container(
               color: AppConst.appTheme,
-              height: 27*h,
+              height: 27 * h,
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(4*w),
+            padding: EdgeInsets.all(4 * w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 5*h),
+                SizedBox(height: 5 * h),
                 ReusableText(
-                  text: 'Dashboard',
+                  text: _getGreeting(),
                   style: fontStyle(24, AppConst.white, FontWeight.w600),
                 ),
                 Expanded(
@@ -43,15 +59,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisSpacing: 5 * w,
                     mainAxisSpacing: 5 * w,
                     children: [
-                      buildContainer(context, 'Generate QR', AppConst.homeContainer, Icons.qr_code_2,const QrCodeGenerator()),
-                      buildContainer(context, 'Attendance', AppConst.homeContainer, Icons.mark_chat_read,const Attendance()),
-                      buildContainer(context, 'Scan QR', AppConst.homeContainer, Icons.bar_chart_outlined,const QrCodeScannerPage()),
-                      // buildContainer(context, 'Events', AppConst.homeContainer, Icons.event_available_outlined,Events()),
+                      buildContainer(context, 'My Attendance', AppConst.homeContainer, Icons.mark_chat_read, const MyAttendance()),
+                      buildContainer(context, 'Scan QR', AppConst.homeContainer, Icons.qr_code_scanner, const QrCodeScannerPage()),
+                      // buildContainer(context, 'Events', AppConst.homeContainer, Icons.event_available_outlined, Events()),
                     ],
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+      floatingActionButton:SpeedDial(
+        icon: Icons.add,
+        overlayColor: Colors.black.withOpacity(0.1),
+        activeIcon: Icons.close,
+        backgroundColor: AppConst.appTheme,
+        foregroundColor: Colors.white,
+        children: [
+          SpeedDialChild(
+            shape: CircleBorder(),
+            child: Icon(Icons.person,color: AppConst.appTheme,),
+            onTap: () {
+              // Navigate to Profile screen
+            },
+          ),
+          SpeedDialChild(
+            shape: CircleBorder(),
+            child: Icon(Icons.logout,color: AppConst.appTheme,),
+            onTap: () {
+              FirebaseAuth.instance.signOut().then((value) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              });
+            },
           ),
         ],
       ),

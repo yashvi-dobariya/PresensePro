@@ -4,6 +4,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../common/widgets/font_style.dart';
 import '../common/widgets/reusable_text.dart';
 import 'form_page_student.dart';
+import 'package:intl/intl.dart';  // Add this import for date formatting
 
 class QrCodeScannerPage extends StatefulWidget {
   const QrCodeScannerPage({super.key});
@@ -60,20 +61,48 @@ class _QrCodeScannerPageState extends State<QrCodeScannerPage> {
       ),
     );
   }
+
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
       });
+
       if (result != null && result!.code != null) {
-        controller.pauseCamera();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => FormPage(scannedCode: result!.code!),
-          ),
-        );
+        // Validate if scanned QR code matches today's date
+        DateTime currentDate = DateTime.now();
+        String formattedDate = DateFormat('yyyyMMdd').format(currentDate);
+
+        // Assuming the QR code contains a date string in format 'yyyyMMdd'
+        if (result!.code!.startsWith(formattedDate)) {
+          controller.pauseCamera();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FormPage(scannedCode: result!.code!),
+            ),
+          );
+        } else {
+          // Handle case where scanned QR code does not match today's date
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Invalid QR Code'),
+              content: const Text('The QR code scanned is not valid for today.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Resume scanning
+                    controller.resumeCamera();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
       }
     });
   }
